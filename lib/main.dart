@@ -377,7 +377,7 @@ class _SecondPageState extends State<SecondPage> {
   }
 }
 
-// Use Gsheets package
+// 統計
 
 class ThirdPage extends StatefulWidget {
   const ThirdPage({Key? key}) : super(key: key);
@@ -409,64 +409,76 @@ class _ThirdPageState extends State<ThirdPage> {
   }
   @override
   Widget build(BuildContext context) {
+    final nameCounts = <String, int>{};
+    for (final row in data) {
+      final name = row[1].toString();
+      nameCounts[name] = (nameCounts[name] ?? 0) + 1;
+    }
+
     return Scaffold(
-      body: FractionallySizedBox(
-        widthFactor: 1.0, // 设置表格宽度占比为 80%
-        child: Align(
-          alignment: Alignment.topCenter, // 将表格置于页面上方居中
-          child: SingleChildScrollView(
-            child: DataTable(
-              columns: [
-                DataColumn(
-                  label: Text('訂購人', style: TextStyle(fontWeight: FontWeight.bold),),
-                ),
-                DataColumn(
-                  label: Text('品項', style: TextStyle(fontWeight: FontWeight.bold),),
-                ),
-                DataColumn(
-                  label: Text('甜度冰塊',
-                    style: TextStyle(fontWeight: FontWeight.bold),),
-                ),
-              ],
-              rows: List.generate(
-                data.length,
-                    (index) => DataRow(
-                  cells: List.generate(
-                    data[index].length - 1,
-                        (cellIndex) => DataCell(
-                      Text(data[index][cellIndex + 1].toString()),
-                    ),
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // 统计表格
+              DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('訂購人', style: TextStyle(fontWeight: FontWeight.bold),),
                   ),
+                  DataColumn(
+                    label: Text('杯數', style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+                ],
+                rows: nameCounts.entries.map((entry) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(entry.key)),
+                      DataCell(Text(entry.value.toString())),
+                    ],
+                  );
+                }).toList(),
+              ),
+
+              SizedBox(height: 20), // 添加间距
+
+              // 数据表格
+              DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('訂購人', style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+                  DataColumn(
+                    label: Text('品項', style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+                  DataColumn(
+                    label: Text('甜度冰塊', style: TextStyle(fontWeight: FontWeight.bold),),
+                  ),
+                ],
+                rows: List.generate(
+                  data.length,
+                      (index) {
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          Text(data[index][1].toString()),
+                        ),
+                        DataCell(
+                          Text(data[index][2].toString()),
+                        ),
+                        DataCell(
+                          Text(data[index][3].toString()),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
-  /*@override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Third Page'),
-      ),
-      body: SingleChildScrollView(
-        child: DataTable(
-          columns: [
-            DataColumn(label: Text('訂購人')),
-            DataColumn(label: Text('品項')),
-            DataColumn(label: Text('甜度冰塊')),
-          ],
-          rows: data.map((row) {
-            return DataRow(cells: [
-              DataCell(Text(row[1].toString())),
-              DataCell(Text(row[2].toString())),
-              DataCell(Text(row[3].toString())),
-            ]);
-          }).toList(),
-        ),
-      ),
-    );
-  }*/
 }
